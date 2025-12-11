@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MANENTECH • QR Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <style>
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+  <!-- Fondo de partículas -->
+  <div id="particles-js"></div>
+
+  <!-- Contenedor principal -->
+  <div class="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-[450px] text-center">
+    
+    <!-- Logo -->
+    <div class="flex justify-center mb-4">
+      <img src="Capturelog.PNG" alt="MANEN Logo" class="h-24 object-contain">
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">📱 Escanea el QR</h1>
+    <p class="mb-6 text-gray-600">Accede a mi portfolio <span class="font-semibold">MANENTECH</span></p>
+
+    <!-- Contenedor QR -->
+    <div id="qrcode" class="flex justify-center mb-6"></div>
+
+    <!-- Botones -->
+    <div class="flex flex-col gap-3">
+      <a href="https://catalinanchama209.github.io/MANEN-ENGL/" target="_blank"
+         class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-semibold transition duration-300">
+         Ir al Portfolio 🚀
+      </a>
+      <button id="downloadBtn" 
+         class="bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-xl font-semibold transition duration-300">
+         Descargar QR 📥
+      </button>
+    </div>
+
+    <hr class="my-6">
+
+    <!-- Subir QR para escanear -->
+    <h2 class="text-lg font-semibold text-gray-800 mb-2">🔍 Escanea un QR desde una imagen</h2>
+    <input type="file" id="uploadInput" accept="image/*" class="mb-3">
+    <canvas id="canvas" class="hidden"></canvas>
+    <p id="result" class="text-blue-700 font-medium"></p>
+
+  </div>
+
+  <script>
+    const url = "https://catalinanchama209.github.io/MANEN-ENGL/";
+    const qrCanvas = document.createElement("canvas");
+
+    // Generar QR
+    QRCode.toCanvas(qrCanvas, url, {
+      width: 220,
+      margin: 2,
+      color: {
+        dark: "#000000",
+        light: "#ffffff"
+      }
+    }, function (error) {
+      if (error) console.error(error);
+      document.getElementById("qrcode").appendChild(qrCanvas);
+    });
+
+    // Descargar QR
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = "manentech_qr.png";
+      link.href = qrCanvas.toDataURL("image/png");
+      link.click();
+    });
+
+    // Subir y escanear QR
+    const uploadInput = document.getElementById("uploadInput");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const result = document.getElementById("result");
+
+    uploadInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, canvas.width, canvas.height);
+          if (code) {
+            result.innerHTML = `✅ QR Detectado: <a href="${code.data}" target="_blank" class="underline text-blue-800">${code.data}</a>`;
+          } else {
+            result.innerText = "❌ No se detectó ningún QR en la imagen.";
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Configuración de partículas
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": { "enable": true, "value_area": 800 }
+        },
+        "color": { "value": "#00aaff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.5 },
+        "size": { "value": 3 },
+        "line_linked": { "enable": true, "distance": 150, "color": "#00aaff", "opacity": 0.4, "width": 1 },
+        "move": { "enable": true, "speed": 2 }
+      }
+    });
+  </script>
+
+</body>
+</html>
